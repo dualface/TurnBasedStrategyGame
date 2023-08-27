@@ -1,20 +1,26 @@
 using System;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 namespace UnitSystem
 {
     public class UnitHealth : MonoBehaviour
     {
         public event Action OnDead;
+        public event Action OnHealthChanged;
 
         [SerializeField]
-        private int maxHealth = 100;
+        private int health = 100;
 
-        private int _health;
+        public int MaxHealth { get; private set; }
+        public int Health
+        {
+            get => health;
+        }
 
         private void Awake()
         {
-            _health = maxHealth;
+            MaxHealth = health;
         }
 
         private void Die()
@@ -24,15 +30,17 @@ namespace UnitSystem
 
         public void TakeDamage(int damage)
         {
-            _health -= damage;
-            if (_health <= 0)
+            var actualDamage = damage;
+            if (actualDamage > health)
             {
-                _health = 0;
+                actualDamage = health;
             }
+            health -= actualDamage;
 
-            Debug.Log($"Unit {gameObject.name} took {damage} damage, remaining health: {_health}");
+            Debug.Log($"Unit {gameObject.name} took {actualDamage} damage, remaining health: {health}");
+            OnHealthChanged?.Invoke();
 
-            if (_health == 0)
+            if (health == 0)
             {
                 Die();
             }

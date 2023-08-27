@@ -7,7 +7,7 @@ namespace UnitSystem
 {
     public class Unit : MonoBehaviour
     {
-        public const int DefaultActionPoints = 2;
+        public event Action OnActionPointsChanged;
 
         [SerializeField]
         private GameObject selectionVisual;
@@ -17,6 +17,8 @@ namespace UnitSystem
 
         [SerializeField]
         private bool isEnemy;
+
+        private const int DefaultActionPoints = 2;
 
         public int ActionPoints { get; private set; } = DefaultActionPoints;
 
@@ -30,13 +32,13 @@ namespace UnitSystem
 
         public bool IsEnemy => isEnemy;
 
-        private UnitHealth _health;
+        public UnitHealth Health { get; private set; }
 
         private void Awake()
         {
             DefaultAction = GetComponent<MoveAction>();
             Actions = GetComponents<BaseAction>();
-            _health = GetComponent<UnitHealth>();
+            Health = GetComponent<UnitHealth>();
         }
 
         private void Start()
@@ -49,7 +51,7 @@ namespace UnitSystem
             UnitActionSystem.Instance.AddUnit(this);
             SetSelected(UnitActionSystem.Instance.SelectedUnit == this);
 
-            _health.OnDead += OnDead;
+            Health.OnDead += OnDead;
         }
 
         private void Update()
@@ -67,6 +69,7 @@ namespace UnitSystem
         private void SpendActionPoints(int amount)
         {
             ActionPoints -= amount;
+            OnActionPointsChanged?.Invoke();
         }
 
         private void OnDead()
@@ -102,12 +105,13 @@ namespace UnitSystem
             if (isPlayerTurn && !isEnemy || !isPlayerTurn && isEnemy)
             {
                 ActionPoints = DefaultActionPoints;
+                OnActionPointsChanged?.Invoke();
             }
         }
 
         public void TakeDamage(int damage)
         {
-            _health.TakeDamage(damage);
+            Health.TakeDamage(damage);
         }
 
         public override string ToString() => $"Unit {gameObject.name}";
