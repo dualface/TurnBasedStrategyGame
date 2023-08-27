@@ -56,6 +56,7 @@ namespace UnitAction
 
             var validPositionList = new List<GridPosition>();
             for (var column = -maxShootDistance; column <= maxShootDistance; column++)
+            {
                 for (var row = -maxShootDistance; row <= maxShootDistance; row++)
                 {
                     var distance = Vector2Int.Distance(new Vector2Int(column, row), Vector2Int.zero);
@@ -91,8 +92,44 @@ namespace UnitAction
                         }
                     }
                 }
+            }
 
             return validPositionList;
+        }
+
+        public List<GridPosition> GetRangeGridPositionList()
+        {
+            var level = LevelGrid.Instance;
+
+            var rangePositionList = new List<GridPosition>();
+            for (var column = -maxShootDistance; column <= maxShootDistance; column++)
+            {
+                for (var row = -maxShootDistance; row <= maxShootDistance; row++)
+                {
+                    var distance = Vector2Int.Distance(new Vector2Int(column, row), Vector2Int.zero);
+                    if (distance > maxShootDistance)
+                    {
+                        continue;
+                    }
+
+                    var offsetPosition = new GridPosition(row, column);
+                    var testPosition = OwnerUnit.GridPosition + offsetPosition;
+
+                    if (!level.IsValidGridPosition(testPosition))
+                    {
+                        continue;
+                    }
+
+                    if (OwnerUnit.GridPosition == testPosition)
+                    {
+                        continue;
+                    }
+
+                    rangePositionList.Add(testPosition);
+                }
+            }
+
+            return rangePositionList;
         }
 
         public override void TakeAction(GridPosition gridPosition, Action onActionComplete)

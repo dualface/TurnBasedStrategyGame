@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnitAction;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Grid;
 
 namespace UnitSystem
 {
@@ -162,7 +163,7 @@ namespace UnitSystem
         private void ClearBusy()
         {
             _isBusy = false;
-            UpdateGridVisual();
+            UpdateSelectedActionGridVisual();
             OnBusyChanged?.Invoke(_isBusy);
         }
 
@@ -172,6 +173,49 @@ namespace UnitSystem
             {
                 unit.StartNewTurn(isPlayerTurn);
             }
+
+            UpdateSelectedActionGridVisual();
+        }
+
+        private void UpdateSelectedActionGridVisual()
+        {
+            if (!_selectedAction)
+            {
+                return;
+            }
+
+            var visual = LevelGrid.Instance.GetVisual();
+            visual.HideAll();
+
+            var canTakeAction = SelectedUnit.ActionPoints >= _selectedAction.GetActionPointsCost();
+            var color = canTakeAction ? GridSystemVisual.CellColor.White : GridSystemVisual.CellColor.Gray;
+
+            switch (_selectedAction)
+            {
+                case SpinAction:
+                    if (canTakeAction)
+                    {
+                        color = GridSystemVisual.CellColor.Blue;
+                    }
+                    break;
+                case ShootAction shootAction:
+                    var rangePositionList = shootAction.GetRangeGridPositionList();
+                    if (canTakeAction)
+                    {
+                        visual.ShowPositionList(rangePositionList, GridSystemVisual.CellColor.RedSoft);
+                        color = GridSystemVisual.CellColor.Red;
+                    }
+                    else
+                    {
+                        visual.ShowPositionList(rangePositionList, color);
+                    }
+                    break;
+                case MoveAction:
+                default:
+                    break;
+            }
+
+            visual.ShowPositionList(_selectedAction.GetValidActionGridPositionList(), color);
         }
 
         public void SetSelectedAction(BaseAction action)
@@ -186,21 +230,12 @@ namespace UnitSystem
                 _selectedAction.IsSelected = false;
             }
 
-            Debug.Log($"Select action {action.ActionName}");
             _selectedAction = action;
             _selectedAction.IsSelected = true;
-            OnSelectedActionChanged?.Invoke(_selectedAction);
-            UpdateGridVisual();
-        }
+            UpdateSelectedActionGridVisual();
 
-        private void UpdateGridVisual()
-        {
-            var visual = LevelGrid.Instance.GetVisual();
-            visual.HideAll();
-            if (_selectedAction)
-            {
-                visual.ShowPositionList(_selectedAction.GetValidActionGridPositionList());
-            }
+            OnSelectedActionChanged?.Invoke(_selectedAction);
+            Debug.Log($"Select action {action.ActionName}");
         }
 
         public void AddUnit(Unit unit)

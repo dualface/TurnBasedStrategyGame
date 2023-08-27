@@ -685,7 +685,7 @@ MonoBehaviour:
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
-    m_Time: 0.2
+    m_Time: 0.4
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -712,11 +712,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneCamera: {fileID: 507133871}
-  actionCamera: {fileID: 774820482}
   moveSpeed: 10
   rotateSpeed: 160
   zoomAmount: 1
   zoomSpeed: 2
+  actionCamera: {fileID: 774820482}
+  actionLookOffset: {x: 1, y: 1.7, z: -1.5}
 --- !u!1 &407681038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1624,7 +1625,7 @@ GameObject:
   m_Component:
   - component: {fileID: 973358932}
   m_Layer: 0
-  m_Name: System
+  m_Name: UnitSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1643,8 +1644,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1857199497}
   - {fileID: 1500055543}
+  - {fileID: 1857199497}
   - {fileID: 1437007716}
   - {fileID: 518297641}
   m_Father: {fileID: 0}
@@ -1889,7 +1890,7 @@ GameObject:
   - component: {fileID: 1198041836}
   - component: {fileID: 1198041837}
   m_Layer: 0
-  m_Name: LevelGrid
+  m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2322,6 +2323,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridCellVisualPrefab: {fileID: 2681316709125874122, guid: 2d3003b8eb6d91d4c90e0c7b2822f2b9,
     type: 3}
+  cellColorMaterials:
+  - color: 0
+    material: {fileID: 2100000, guid: 3655f4dd0e25d0b4cb413e1d2e546fdf, type: 2}
+  - color: 1
+    material: {fileID: 2100000, guid: b8e47b9ef7c1a6641a51b4dc90f5b4a8, type: 2}
+  - color: 2
+    material: {fileID: 2100000, guid: fb06ebfe172c9634e9d8f115376b519b, type: 2}
+  - color: 3
+    material: {fileID: 2100000, guid: ea3b99ded4ba46943a12d1fee8db7e4e, type: 2}
+  - color: 4
+    material: {fileID: 2100000, guid: 7e23ca709a1c0924aaea716e7b930f2b, type: 2}
+  - color: 5
+    material: {fileID: 2100000, guid: cf775748cbf082e438f7d3f9608686bb, type: 2}
 --- !u!1 &1428018691
 GameObject:
   m_ObjectHideFlags: 0
@@ -3087,6 +3101,6 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 407681042}
-  - {fileID: 540854026}
   - {fileID: 1198041836}
+  - {fileID: 540854026}
   - {fileID: 973358932}

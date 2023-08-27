@@ -7,8 +7,12 @@ namespace Grid
         [SerializeField]
         private MeshRenderer meshRenderer;
 
-        public void Show()
+        public void Show(Material material)
         {
+            if (material)
+            {
+                meshRenderer.material = material;
+            }
             meshRenderer.enabled = true;
         }
 

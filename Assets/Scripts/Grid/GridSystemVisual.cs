@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,11 +6,47 @@ namespace Grid
 {
     public class GridSystemVisual : MonoBehaviour
     {
+        public enum CellColor
+        {
+            White,
+            Red,
+            RedSoft,
+            Green,
+            Blue,
+            Orange,
+            Gray,
+        }
+
+        [Serializable]
+        public struct CellColorMaterial
+        {
+            public CellColor color;
+            public Material material;
+        }
+
         [SerializeField]
         private GameObject gridCellVisualPrefab;
 
+        [SerializeField]
+        private List<CellColorMaterial> cellColorMaterials;
+
         private GridSystem _grid;
         private GridSystemCellVisual[,] _cellArray;
+
+        private Material GetMaterialByColor(CellColor color)
+        {
+            foreach (var m in cellColorMaterials)
+            {
+                if (m.color == color)
+                {
+                    return m.material;
+                }
+            }
+
+            Debug.LogError($"Material for color {color} not found");
+
+            return null;
+        }
 
         public void CreateGridVisual(GridSystem grid)
         {
@@ -40,11 +77,12 @@ namespace Grid
             }
         }
 
-        public void ShowPositionList(List<GridPosition> positionList)
+        public void ShowPositionList(List<GridPosition> positionList, CellColor color)
         {
+            var material = GetMaterialByColor(color);
             foreach (var position in positionList)
             {
-                _cellArray[position.Row, position.Column].Show();
+                _cellArray[position.Row, position.Column].Show(material);
             }
         }
     }

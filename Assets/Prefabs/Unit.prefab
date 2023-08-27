@@ -247,7 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6edea1303f12c941bd73ca561bf9647, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxShootDistance: 5
+  maxShootDistance: 2
   aimingDuration: 0.5
   shootDuration: 0.2
   cooloffDuration: 0.5
@@ -563,7 +563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.78039217, g: 0.24705882, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.4968592, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
