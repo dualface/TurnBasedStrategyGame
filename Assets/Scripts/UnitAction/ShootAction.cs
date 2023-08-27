@@ -10,7 +10,7 @@ namespace UnitAction
     {
         public event Action<OnShootingArgs> OnShooting;
 
-        public class OnShootingArgs : EventArgs
+        public class OnShootingArgs
         {
             public OnShootingArgs(Unit shootingUnit, Unit targetUnit)
             {
@@ -21,6 +21,8 @@ namespace UnitAction
             public Unit TargetUnit { get; }
             public Unit ShootingUnit { get; }
         }
+
+        public Unit TargetUnit { get; private set; }
 
         [SerializeField]
         private int maxShootDistance = 5;
@@ -47,54 +49,6 @@ namespace UnitAction
 
         private ShootState _state = ShootState.Aiming;
         private float _stateTimer;
-        private Unit _targetUnit;
-
-        private void Update()
-        {
-            if (!IsActive)
-            {
-                return;
-            }
-
-            if (_state == ShootState.Aiming)
-            {
-                var aimDirection = (_targetUnit.WorldPosition - transform.position).normalized;
-                transform.forward = Vector3.Lerp(transform.forward, aimDirection, rotateSpeed * Time.deltaTime);
-            }
-
-            _stateTimer -= Time.deltaTime;
-            if (_stateTimer <= 0)
-            {
-                NextState();
-            }
-        }
-
-        private void NextState()
-        {
-            switch (_state)
-            {
-                case ShootState.Aiming:
-                    _state = ShootState.Shooting;
-                    _stateTimer = shootDuration;
-                    break;
-                case ShootState.Shooting:
-                    _state = ShootState.Cooloff;
-                    _stateTimer = cooloffDuration;
-                    Shoot();
-                    break;
-                case ShootState.Cooloff:
-                    _state = ShootState.Idle;
-                    ActionComplete();
-                    break;
-            }
-            Debug.Log($"Unit {OwnerUnit.name} is enter state {_state}");
-        }
-
-        private void Shoot()
-        {
-            _targetUnit.TakeDamage(40);
-            OnShooting?.Invoke(new OnShootingArgs(OwnerUnit, _targetUnit));
-        }
 
         public override List<GridPosition> GetValidActionGridPositionList()
         {
@@ -149,13 +103,61 @@ namespace UnitAction
                 return;
             }
 
-            _targetUnit = unitList[0];
+            TargetUnit = unitList[0];
             _state = ShootState.Aiming;
             _stateTimer = aimingDuration;
-            ActionStart(onActionComplete);
             Debug.Log($"Unit {OwnerUnit.name} is enter state {_state}");
+
+            ActionStart(onActionComplete);
         }
 
         protected override string GetActionName() => "Shoot";
+
+        private void Update()
+        {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            if (_state == ShootState.Aiming)
+            {
+                var aimDirection = (TargetUnit.WorldPosition - transform.position).normalized;
+                transform.forward = Vector3.Lerp(transform.forward, aimDirection, rotateSpeed * Time.deltaTime);
+            }
+
+            _stateTimer -= Time.deltaTime;
+            if (_stateTimer <= 0)
+            {
+                NextState();
+            }
+        }
+
+        private void NextState()
+        {
+            switch (_state)
+            {
+                case ShootState.Aiming:
+                    _state = ShootState.Shooting;
+                    _stateTimer = shootDuration;
+                    break;
+                case ShootState.Shooting:
+                    _state = ShootState.Cooloff;
+                    _stateTimer = cooloffDuration;
+                    Shoot();
+                    break;
+                case ShootState.Cooloff:
+                    _state = ShootState.Idle;
+                    ActionComplete();
+                    break;
+            }
+            Debug.Log($"Unit {OwnerUnit.name} is enter state {_state}");
+        }
+
+        private void Shoot()
+        {
+            TargetUnit.TakeDamage(40);
+            OnShooting?.Invoke(new OnShootingArgs(OwnerUnit, TargetUnit));
+        }
     }
 }

@@ -21,31 +21,11 @@ namespace UnitAction
 
         private Vector3 _targetPosition;
 
-        private void Update()
-        {
-            if (!IsActive)
-            {
-                return;
-            }
-
-            var beforeDistance = Vector3.Distance(transform.position, _targetPosition);
-            var moveDirection = (_targetPosition - transform.position).normalized;
-            transform.position += moveSpeed * Time.deltaTime * moveDirection;
-            transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
-            if (Vector3.Distance(transform.position, _targetPosition) > beforeDistance)
-            {
-                transform.position = _targetPosition;
-                Arrived();
-            }
-        }
-
-        protected override string GetActionName() => "Move";
-
         public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
         {
             _targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
-            ActionStart(onActionComplete);
             OnMoveStart?.Invoke();
+            ActionStart(onActionComplete);
         }
 
         public override List<GridPosition> GetValidActionGridPositionList()
@@ -80,10 +60,30 @@ namespace UnitAction
             return validPositionList;
         }
 
+        protected override string GetActionName() => "Move";
+
+        private void Update()
+        {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            var beforeDistance = Vector3.Distance(transform.position, _targetPosition);
+            var moveDirection = (_targetPosition - transform.position).normalized;
+            transform.position += moveSpeed * Time.deltaTime * moveDirection;
+            transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
+            if (Vector3.Distance(transform.position, _targetPosition) > beforeDistance)
+            {
+                transform.position = _targetPosition;
+                Arrived();
+            }
+        }
+
         private void Arrived()
         {
-            ActionComplete();
             OnMoveComplete?.Invoke();
+            ActionComplete();
         }
     }
 }

@@ -15,6 +15,11 @@ namespace UnitAction
 
         private Vector3 _targetPosition;
 
+        public void Setup(Vector3 targetPosition)
+        {
+            _targetPosition = targetPosition;
+        }
+
         private void Update()
         {
             var moveDirection = (_targetPosition - transform.position).normalized;
@@ -34,11 +39,6 @@ namespace UnitAction
             Destroy(gameObject);
 
             Instantiate(bulletHitVFXPrefab, _targetPosition, Quaternion.identity);
-        }
-
-        public void Setup(Vector3 targetPosition)
-        {
-            _targetPosition = targetPosition;
         }
     }
 }

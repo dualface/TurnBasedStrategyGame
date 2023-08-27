@@ -183,12 +183,12 @@ namespace UnitSystem
 
             if (_selectedAction)
             {
-                _selectedAction.SetSelected(false);
+                _selectedAction.IsSelected = false;
             }
 
             Debug.Log($"Select action {action.ActionName}");
             _selectedAction = action;
-            _selectedAction.SetSelected(true);
+            _selectedAction.IsSelected = true;
             OnSelectedActionChanged?.Invoke(_selectedAction);
             UpdateGridVisual();
         }
