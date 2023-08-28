@@ -1,38 +1,51 @@
 using System;
 using UnityEngine;
 
-public class TurnSystem : MonoBehaviour
+namespace UnitSystem
 {
-    public Action<bool, int> OnStartNewTurn;
-
-    public static TurnSystem Instance { get; private set; }
-
-    public int Round { get; private set; } = 1;
-
-    public bool IsPlayerTurn { get; private set; } = true;
-
-    private void Awake()
+    public class TurnSystem : MonoBehaviour
     {
-        if (Instance)
+        public Action<StartNewTurnArgs> OnStartNewTurn;
+
+        public static TurnSystem Instance { get; private set; }
+
+        public int Round { get; private set; } = 1;
+
+        public bool IsPlayerTurn { get; private set; } = true;
+
+        private void Awake()
         {
-            Debug.LogError("TurnSystem instance already exist");
-            Destroy(gameObject);
-            return;
+            if (Instance)
+            {
+                Debug.LogError("TurnSystem instance already exist");
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
         }
 
-        Instance = this;
-    }
-
-    public void NextTurn()
-    {
-        IsPlayerTurn = !IsPlayerTurn;
-        if (IsPlayerTurn)
+        public void NextTurn()
         {
-            Round++;
+            IsPlayerTurn = !IsPlayerTurn;
+            if (IsPlayerTurn)
+            {
+                Round++;
+            }
+
+            OnStartNewTurn?.Invoke(new StartNewTurnArgs(IsPlayerTurn, Round));
         }
 
-        OnStartNewTurn?.Invoke(IsPlayerTurn, Round);
-        var turnName = IsPlayerTurn ? "player" : "enemy";
-        Debug.Log($"Start new {turnName} turn, round {Round}");
+        public class StartNewTurnArgs
+        {
+            public StartNewTurnArgs(bool isPlayerTurn, int round)
+            {
+                IsPlayerTurn = isPlayerTurn;
+                Round = round;
+            }
+
+            public bool IsPlayerTurn { get; }
+            public int Round { get; }
+        }
     }
 }

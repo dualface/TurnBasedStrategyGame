@@ -17,7 +17,6 @@ namespace UnitSystem
         [SerializeField]
         private GameObject bulletProjectilePrefab;
 
-
         private void Awake()
         {
             if (TryGetComponent<MoveAction>(out var moveAction))
@@ -32,13 +31,13 @@ namespace UnitSystem
             }
         }
 
-        private void OnShoot(ShootAction.OnShootingArgs args)
+        private void OnShoot(ShootAction.ShootingArgs args)
         {
             animator.SetTrigger(Shoot);
             var bullet = Instantiate(bulletProjectilePrefab, shootPoint.position, Quaternion.identity);
-            var targetPosition = args.TargetUnit.WorldPosition;
-            targetPosition.y = shootPoint.position.y;
-            bullet.GetComponent<BulletProjectile>().Setup(targetPosition);
+            var p = args.TargetUnit.WorldPosition;
+            p.y = shootPoint.position.y;
+            bullet.GetComponent<BulletProjectile>().Setup(p);
         }
     }
 }

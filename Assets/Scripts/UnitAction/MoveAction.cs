@@ -7,9 +7,6 @@ namespace UnitAction
 {
     public class MoveAction : BaseAction
     {
-        public event Action OnMoveStart;
-        public event Action OnMoveComplete;
-
         [SerializeField]
         private int maxMoveDistance = 2;
 
@@ -21,47 +18,6 @@ namespace UnitAction
 
         private Vector3 _targetPosition;
 
-        public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
-        {
-            _targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
-            OnMoveStart?.Invoke();
-            ActionStart(onActionComplete);
-        }
-
-        public override List<GridPosition> GetValidActionGridPositionList()
-        {
-            var level = LevelGrid.Instance;
-
-            var validPositionList = new List<GridPosition>();
-            for (var column = -maxMoveDistance; column <= maxMoveDistance; column++)
-                for (var row = -maxMoveDistance; row <= maxMoveDistance; row++)
-                {
-                    var offsetPosition = new GridPosition(row, column);
-                    var testPosition = OwnerUnit.GridPosition + offsetPosition;
-
-                    if (!level.IsValidGridPosition(testPosition))
-                    {
-                        continue;
-                    }
-
-                    if (level.HasAnyUnitAtGridPosition(testPosition))
-                    {
-                        continue;
-                    }
-
-                    if (OwnerUnit.GridPosition == testPosition)
-                    {
-                        continue;
-                    }
-
-                    validPositionList.Add(testPosition);
-                }
-
-            return validPositionList;
-        }
-
-        protected override string GetActionName() => "Move";
-
         private void Update()
         {
             if (!IsActive)
@@ -69,16 +25,66 @@ namespace UnitAction
                 return;
             }
 
-            var beforeDistance = Vector3.Distance(transform.position, _targetPosition);
-            var moveDirection = (_targetPosition - transform.position).normalized;
-            transform.position += moveSpeed * Time.deltaTime * moveDirection;
-            transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
-            if (Vector3.Distance(transform.position, _targetPosition) > beforeDistance)
+            var p = transform.position;
+            var beforeDist = Vector3.Distance(p, _targetPosition);
+            var moveDir = (_targetPosition - p).normalized;
+            p += moveSpeed * Time.deltaTime * moveDir;
+
+            transform.position = p;
+            transform.forward = Vector3.Lerp(transform.forward, moveDir, rotateSpeed * Time.deltaTime);
+            if (!(Vector3.Distance(transform.position, _targetPosition) > beforeDist))
             {
-                transform.position = _targetPosition;
-                Arrived();
+                return;
             }
+
+            transform.position = _targetPosition;
+            Arrived();
         }
+
+        public event Action OnMoveStart;
+        public event Action OnMoveComplete;
+
+        public override void TakeAction(GridPosition p, Action onActionComplete)
+        {
+            _targetPosition = LevelGrid.Instance.GetWorldPosition(p);
+            OnMoveStart?.Invoke();
+            ActionStart(onActionComplete);
+        }
+
+        public override List<GridPosition> GetValidActionPositions()
+        {
+            var level = LevelGrid.Instance;
+            var positions = new List<GridPosition>();
+            for (var c = -maxMoveDistance; c <= maxMoveDistance; c++)
+            {
+                for (var r = -maxMoveDistance; r <= maxMoveDistance; r++)
+                {
+                    var offset = new GridPosition(r, c);
+                    var test = OwnerUnit.GridPosition + offset;
+
+                    if (!level.IsValidGridPosition(test))
+                    {
+                        continue;
+                    }
+
+                    if (level.HasAnyUnitAtGridPosition(test))
+                    {
+                        continue;
+                    }
+
+                    if (OwnerUnit.GridPosition == test)
+                    {
+                        continue;
+                    }
+
+                    positions.Add(test);
+                }
+            }
+
+            return positions;
+        }
+
+        protected override string GetActionName() => "Move";
 
         private void Arrived()
         {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnitAction;
-using UnityEngine;
 using UnitSystem;
+using UnityEngine;
 
 namespace UI
 {
@@ -21,23 +21,20 @@ namespace UI
 
         private readonly List<ActionButtonUI> _buttons = new();
 
-        private UnitActionSystem _sys;
-
         private void Start()
         {
-            _sys = UnitActionSystem.Instance;
-            _sys.OnSelectedUnitChanged += OnSelectedUnitChanged;
-            _sys.OnSelectedActionChanged += OnSelectedActionChanged;
-            _sys.OnBusyChanged += OnBusyChanged;
-
             TurnSystem.Instance.OnStartNewTurn += OnStartNewTurn;
 
-            actionPointsUI.HideActionPoints();
-
-            if (_sys.SelectedUnit)
+            UnitActionSystem.Instance.OnSelectedUnitChanged += OnSelectedUnitChanged;
+            UnitActionSystem.Instance.OnSelectedActionChanged += OnSelectedActionChanged;
+            UnitActionSystem.Instance.OnBusyChanged += OnBusyChanged;
+            var selected = UnitActionSystem.Instance.SelectedUnit;
+            if (selected)
             {
-                CreateActionButtons(_sys.SelectedUnit);
+                CreateActionButtons(selected);
             }
+
+            actionPointsUI.HideActionPoints();
         }
 
         private void OnSelectedUnitChanged(Unit unit)
@@ -54,10 +51,7 @@ namespace UI
             }
         }
 
-        private void OnSelectedActionChanged(BaseAction action)
-        {
-            UpdateSelectedVisual();
-        }
+        private void OnSelectedActionChanged(BaseAction action) { UpdateSelectedVisual(); }
 
         private void OnBusyChanged(bool busy)
         {
@@ -69,7 +63,7 @@ namespace UI
         {
             if (show)
             {
-                actionPointsUI.UpdateActionPoints(_sys.SelectedUnit);
+                actionPointsUI.UpdateActionPoints(UnitActionSystem.Instance.SelectedUnit);
             }
             else
             {
@@ -87,13 +81,10 @@ namespace UI
             _buttons.Clear();
             foreach (var action in unit.Actions)
             {
-                var obj = Instantiate(actionButtonPrefab, actionButtonsContainer);
-                var button = obj.GetComponent<ActionButtonUI>();
+                var o = Instantiate(actionButtonPrefab, actionButtonsContainer);
+                var button = o.GetComponent<ActionButtonUI>();
                 button.SetAction(action);
-                button.Button.onClick.AddListener(() =>
-                {
-                    _sys.SetSelectedAction(button.Action);
-                });
+                button.Button.onClick.AddListener(() => { UnitActionSystem.Instance.SetSelectedAction(button.Action); });
                 _buttons.Add(button);
             }
 
@@ -108,9 +99,6 @@ namespace UI
             }
         }
 
-        private void OnStartNewTurn(bool isPlayerTurn, int round)
-        {
-            UpdateActionPoints(isPlayerTurn);
-        }
+        private void OnStartNewTurn(TurnSystem.StartNewTurnArgs a) { UpdateActionPoints(a.IsPlayerTurn); }
     }
 }

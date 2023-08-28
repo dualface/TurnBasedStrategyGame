@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Grid;
 using UnitAction;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Grid;
 
 namespace UnitSystem
 {
@@ -39,10 +39,7 @@ namespace UnitSystem
             TurnSystem.Instance.OnStartNewTurn += OnStartNewTurn;
         }
 
-        private void Start()
-        {
-            ClearBusy();
-        }
+        private void Start() { ClearBusy(); }
 
         private void Update()
         {
@@ -167,11 +164,11 @@ namespace UnitSystem
             OnBusyChanged?.Invoke(_isBusy);
         }
 
-        private void OnStartNewTurn(bool isPlayerTurn, int round)
+        private void OnStartNewTurn(TurnSystem.StartNewTurnArgs a)
         {
             foreach (var unit in _units)
             {
-                unit.StartNewTurn(isPlayerTurn);
+                unit.StartNewTurn(a.IsPlayerTurn);
             }
 
             UpdateSelectedActionGridVisual();
@@ -184,7 +181,7 @@ namespace UnitSystem
                 return;
             }
 
-            var visual = LevelGrid.Instance.GetVisual();
+            var visual = LevelGrid.Instance.GridVisual;
             visual.HideAll();
 
             var canTakeAction = SelectedUnit.ActionPoints >= _selectedAction.GetActionPointsCost();
@@ -192,30 +189,32 @@ namespace UnitSystem
 
             switch (_selectedAction)
             {
-                case SpinAction:
-                    if (canTakeAction)
-                    {
-                        color = GridSystemVisual.CellColor.Blue;
-                    }
-                    break;
-                case ShootAction shootAction:
-                    var rangePositionList = shootAction.GetRangeGridPositionList();
-                    if (canTakeAction)
-                    {
-                        visual.ShowPositionList(rangePositionList, GridSystemVisual.CellColor.RedSoft);
-                        color = GridSystemVisual.CellColor.Red;
-                    }
-                    else
-                    {
-                        visual.ShowPositionList(rangePositionList, color);
-                    }
-                    break;
-                case MoveAction:
-                default:
-                    break;
+            case SpinAction:
+                if (canTakeAction)
+                {
+                    color = GridSystemVisual.CellColor.Blue;
+                }
+
+                break;
+            case ShootAction shootAction:
+                var positions = shootAction.GetRangePositions();
+                if (canTakeAction)
+                {
+                    visual.ShowPositions(positions, GridSystemVisual.CellColor.RedSoft);
+                    color = GridSystemVisual.CellColor.Red;
+                }
+                else
+                {
+                    visual.ShowPositions(positions, color);
+                }
+
+                break;
+            case MoveAction:
+            default:
+                break;
             }
 
-            visual.ShowPositionList(_selectedAction.GetValidActionGridPositionList(), color);
+            visual.ShowPositions(_selectedAction.GetValidActionPositions(), color);
         }
 
         public void SetSelectedAction(BaseAction action)
@@ -238,14 +237,8 @@ namespace UnitSystem
             Debug.Log($"Select action {action.ActionName}");
         }
 
-        public void AddUnit(Unit unit)
-        {
-            _units.Add(unit);
-        }
+        public void AddUnit(Unit unit) { _units.Add(unit); }
 
-        internal void RemoveUnit(Unit unit)
-        {
-            _units.Remove(unit);
-        }
+        internal void RemoveUnit(Unit unit) { _units.Remove(unit); }
     }
 }

@@ -1,4 +1,5 @@
 using TMPro;
+using UnitSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,14 +19,9 @@ namespace UI
         private void Start()
         {
             var instance = TurnSystem.Instance;
-            instance.OnStartNewTurn += UpdateTurnUI;
+            endTurnButton.onClick.AddListener(() => { instance.NextTurn(); });
+            instance.OnStartNewTurn += a => UpdateTurnUI(a.IsPlayerTurn, a.Round);
             UpdateTurnUI(instance.IsPlayerTurn, instance.Round);
-            endTurnButton.onClick.AddListener(OnEndTurnButtonClicked);
-        }
-
-        private void OnEndTurnButtonClicked()
-        {
-            TurnSystem.Instance.NextTurn();
         }
 
         private void UpdateTurnUI(bool isPlayerTurn, int round)

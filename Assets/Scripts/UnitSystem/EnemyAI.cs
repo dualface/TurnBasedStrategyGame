@@ -1,33 +1,33 @@
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+namespace UnitSystem
 {
-    private float _timer;
-
-    private void Start()
+    public class EnemyAI : MonoBehaviour
     {
-        TurnSystem.Instance.OnStartNewTurn += OnStartNewTurn;
-    }
+        private float _timer;
 
-    private void OnStartNewTurn(bool isPlayerTurn, int round)
-    {
-        if (!isPlayerTurn)
+        private void Start() { TurnSystem.Instance.OnStartNewTurn += OnStartNewTurn; }
+
+        private void Update()
         {
-            _timer = 0;
-        }
-    }
+            if (TurnSystem.Instance.IsPlayerTurn)
+            {
+                return;
+            }
 
-    private void Update()
-    {
-        if (TurnSystem.Instance.IsPlayerTurn)
-        {
-            return;
+            _timer += Time.deltaTime;
+            if (_timer >= 2f)
+            {
+                TurnSystem.Instance.NextTurn();
+            }
         }
 
-        _timer += Time.deltaTime;
-        if (_timer >= 2f)
+        private void OnStartNewTurn(TurnSystem.StartNewTurnArgs args)
         {
-            TurnSystem.Instance.NextTurn();
+            if (!args.IsPlayerTurn)
+            {
+                _timer = 0;
+            }
         }
     }
 }

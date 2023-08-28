@@ -7,18 +7,13 @@ namespace UnitSystem
 {
     public class Unit : MonoBehaviour
     {
-        public event Action OnActionPointsChanged;
+        private const int DefaultActionPoints = 2;
 
         [SerializeField]
         private GameObject selectionVisual;
 
         [SerializeField]
-        private Color selectedColor;
-
-        [SerializeField]
         private bool isEnemy;
-
-        private const int DefaultActionPoints = 2;
 
         public int ActionPoints { get; private set; } = DefaultActionPoints;
 
@@ -56,15 +51,17 @@ namespace UnitSystem
 
         private void Update()
         {
-            var newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
-            if (newGridPosition == GridPosition)
+            var newPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+            if (newPosition == GridPosition)
             {
                 return;
             }
 
-            LevelGrid.Instance.UnitMoved(this, GridPosition, newGridPosition);
-            GridPosition = newGridPosition;
+            LevelGrid.Instance.UnitMoved(this, GridPosition, newPosition);
+            GridPosition = newPosition;
         }
+
+        public event Action OnActionPointsChanged;
 
         private void SpendActionPoints(int amount)
         {
@@ -79,10 +76,7 @@ namespace UnitSystem
             Destroy(gameObject);
         }
 
-        public void SetSelected(bool selected)
-        {
-            selectionVisual.SetActive(selected);
-        }
+        public void SetSelected(bool selected) { selectionVisual.SetActive(selected); }
 
         public bool TrySpendActionPointToTakeAction(BaseAction action)
         {
@@ -95,24 +89,20 @@ namespace UnitSystem
             return true;
         }
 
-        public bool CanSpendActionPointToTakeAction(BaseAction action)
-        {
-            return ActionPoints >= action.GetActionPointsCost();
-        }
+        public bool CanSpendActionPointToTakeAction(BaseAction action) => ActionPoints >= action.GetActionPointsCost();
 
         public void StartNewTurn(bool isPlayerTurn)
         {
-            if (isPlayerTurn && !isEnemy || !isPlayerTurn && isEnemy)
+            if ((!isPlayerTurn || isEnemy) && (isPlayerTurn || !isEnemy))
             {
-                ActionPoints = DefaultActionPoints;
-                OnActionPointsChanged?.Invoke();
+                return;
             }
+
+            ActionPoints = DefaultActionPoints;
+            OnActionPointsChanged?.Invoke();
         }
 
-        public void TakeDamage(int damage)
-        {
-            Health.TakeDamage(damage);
-        }
+        public void TakeDamage(int damage) { Health.TakeDamage(damage); }
 
         public override string ToString() => $"Unit {gameObject.name}";
     }

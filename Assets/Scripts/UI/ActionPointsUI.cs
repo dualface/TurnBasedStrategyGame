@@ -1,6 +1,6 @@
 using TMPro;
-using UnityEngine;
 using UnitSystem;
+using UnityEngine;
 
 namespace UI
 {
@@ -21,9 +21,6 @@ namespace UI
             pointsText.text = $"ActionPoints: {unit.ActionPoints}";
         }
 
-        public void HideActionPoints()
-        {
-            gameObject.SetActive(false);
-        }
+        public void HideActionPoints() { gameObject.SetActive(false); }
     }
 }

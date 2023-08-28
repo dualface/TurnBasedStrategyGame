@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Grid;
-using UnityEngine;
 using UnitSystem;
+using UnityEngine;
 
 namespace Grid
 {
@@ -29,6 +28,12 @@ namespace Grid
 
         public static LevelGrid Instance { get; private set; }
 
+        public int Rows => _gridSystem.Rows;
+
+        public int Columns => _gridSystem.Columns;
+
+        public GridSystemVisual GridVisual => gridVisual;
+
         private void Awake()
         {
             if (Instance)
@@ -48,17 +53,11 @@ namespace Grid
             gridVisual.HideAll();
         }
 
-        public void AddUnitAtPosition(GridPosition position, Unit unit)
-        {
-            _gridSystem.GetGridObject(position).AddUnit(unit);
-        }
+        public void AddUnitAtPosition(GridPosition p, Unit unit) { _gridSystem.GetGridObject(p).AddUnit(unit); }
 
-        public List<Unit> GetUnitListAtPosition(GridPosition position) => _gridSystem.GetGridObject(position).GetUnitList();
+        public List<Unit> GetUnitListAtPosition(GridPosition p) => _gridSystem.GetGridObject(p).UnitList;
 
-        public void RemoveUnitAtPosition(GridPosition position, Unit unit)
-        {
-            _gridSystem.GetGridObject(position).RemoveUnit(unit);
-        }
+        public void RemoveUnitAtPosition(GridPosition p, Unit unit) { _gridSystem.GetGridObject(p).RemoveUnit(unit); }
 
         public void UnitMoved(Unit unit, GridPosition from, GridPosition to)
         {
@@ -66,18 +65,12 @@ namespace Grid
             AddUnitAtPosition(to, unit);
         }
 
-        public GridPosition GetGridPosition(Vector3 position) => _gridSystem.GetGridPosition(position);
+        public GridPosition GetGridPosition(Vector3 p) => _gridSystem.GetGridPosition(p);
 
-        public Vector3 GetWorldPosition(GridPosition position) => _gridSystem.GetWorldPosition(position);
+        public Vector3 GetWorldPosition(GridPosition p) => _gridSystem.GetWorldPosition(p);
 
-        public bool IsValidGridPosition(GridPosition position) => _gridSystem.IsValidGridPosition(position);
+        public bool IsValidGridPosition(GridPosition p) => _gridSystem.IsValidGridPosition(p);
 
-        public bool HasAnyUnitAtGridPosition(GridPosition position) => _gridSystem.GetGridObject(position).HasAnyUnit();
-
-        public int Rows => _gridSystem.Rows;
-
-        public int Columns => _gridSystem.Columns;
-
-        public GridSystemVisual GetVisual() => gridVisual;
+        public bool HasAnyUnitAtGridPosition(GridPosition p) => _gridSystem.GetGridObject(p).HasAnyUnit();
     }
 }

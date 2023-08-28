@@ -29,9 +29,6 @@ namespace UI
             text.text = action.ActionName.ToUpper();
         }
 
-        public void UpdateSelectedVisual()
-        {
-            selectedBorder.SetActive(Action.IsSelected);
-        }
+        public void UpdateSelectedVisual() { selectedBorder.SetActive(Action.IsSelected); }
     }
 }

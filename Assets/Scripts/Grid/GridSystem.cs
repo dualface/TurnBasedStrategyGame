@@ -4,55 +4,48 @@ namespace Grid
 {
     public class GridSystem
     {
-        public int Rows { get; private set; }
-
-        public int Columns { get; private set; }
-
-        public float CellSize { get; private set; }
-
-        private readonly GridObject[,] _objects;
+        private readonly GridObject[,] _objectMatrix;
 
         public GridSystem(int rows, int columns, float cellSize)
         {
             Rows = rows;
             Columns = columns;
             CellSize = cellSize;
-            _objects = new GridObject[rows, columns];
-            for (var row = 0; row < Rows; row++)
+
+            _objectMatrix = new GridObject[rows, columns];
+            for (var r = 0; r < Rows; r++)
             {
-                for (var column = 0; column < Columns; column++)
+                for (var c = 0; c < Columns; c++)
                 {
-                    _objects[row, column] = new GridObject(new GridPosition(row, column));
+                    _objectMatrix[r, c] = new GridObject(new GridPosition(r, c));
                 }
             }
         }
 
-        public GridPosition GetGridPosition(Vector3 position) =>
-            new(Mathf.RoundToInt(position.z / CellSize), Mathf.RoundToInt(position.x / CellSize));
+        public int Rows { get; }
 
-        public GridObject GetGridObject(GridPosition position) => _objects[position.Row, position.Column];
+        public int Columns { get; }
 
-        public Vector3 GetWorldPosition(GridPosition position) =>
-            new(position.Column * CellSize, 0, position.Row * CellSize);
+        public float CellSize { get; }
 
-        public bool IsValidGridPosition(GridPosition position) =>
-            position.Row >= 0 && position.Row < Rows && position.Column >= 0 && position.Column < Columns;
+        public GridPosition GetGridPosition(Vector3 p) => new(row: Mathf.RoundToInt(p.z / CellSize), column: Mathf.RoundToInt(p.x / CellSize));
 
-        public void CreateDebugObjects(GameObject gridDebugObjectPrefab, Transform renderer)
+        public GridObject GetGridObject(GridPosition p) => _objectMatrix[p.Row, p.Column];
+
+        public Vector3 GetWorldPosition(GridPosition p) => new(x: p.Column * CellSize, 0, z: p.Row * CellSize);
+
+        public bool IsValidGridPosition(GridPosition p) => p.Row >= 0 && p.Row < Rows && p.Column >= 0 && p.Column < Columns;
+
+        public void CreateDebugObjects(GameObject debugPrefab, Transform renderer)
         {
-            for (var row = 0; row < Rows; row++)
+            for (var r = 0; r < Rows; r++)
             {
-                for (var column = 0; column < Columns; column++)
+                for (var c = 0; c < Columns; c++)
                 {
-                    var pos = new GridPosition(row, column);
-                    var obj = Object.Instantiate(
-                        gridDebugObjectPrefab,
-                        GetWorldPosition(pos),
-                        Quaternion.identity,
-                        renderer
-                    );
-                    var debug = obj.GetComponent<GridDebugObject>();
-                    debug.SetGridObject(GetGridObject(pos));
+                    var p = new GridPosition(r, c);
+                    var o = Object.Instantiate(debugPrefab, position: GetWorldPosition(p), Quaternion.identity, renderer);
+                    var debug = o.GetComponent<GridDebugObject>();
+                    debug.SetGridObject(GetGridObject(p));
                 }
             }
         }

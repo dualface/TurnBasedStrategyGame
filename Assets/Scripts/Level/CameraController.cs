@@ -6,6 +6,10 @@ namespace Level
 {
     public class CameraController : MonoBehaviour
     {
+        private const float MinFollowOffsetY = 2.0f;
+
+        private const float MaxFollowOffsetY = 12.0f;
+
         [SerializeField]
         private CinemachineVirtualCamera sceneCamera;
 
@@ -26,10 +30,6 @@ namespace Level
 
         [SerializeField]
         private Vector3 actionLookOffset;
-
-        private const float MinFollowOffsetY = 2.0f;
-
-        private const float MaxFollowOffsetY = 12.0f;
 
         private CinemachineTransposer _sceneTransposer;
 
@@ -55,14 +55,14 @@ namespace Level
         {
             switch (action)
             {
-                case ShootAction shootAction:
-                    ShowActionCamera();
-                    var height = Vector3.up * actionLookOffset.y;
-                    var dir = (shootAction.TargetUnit.WorldPosition - shootAction.OwnerUnit.WorldPosition).normalized;
-                    var offset = Quaternion.Euler(0, 90, 0) * dir * actionLookOffset.x;
-                    actionCamera.transform.position = shootAction.OwnerUnit.WorldPosition + dir * actionLookOffset.z + height + offset;
-                    actionCamera.transform.LookAt(shootAction.TargetUnit.transform.position + height);
-                    break;
+            case ShootAction shootAction:
+                ShowActionCamera();
+                var height = Vector3.up * actionLookOffset.y;
+                var dir = (shootAction.TargetUnit.WorldPosition - shootAction.OwnerUnit.WorldPosition).normalized;
+                var offset = Quaternion.Euler(0, 90, 0) * dir * actionLookOffset.x;
+                actionCamera.transform.position = shootAction.OwnerUnit.WorldPosition + dir * actionLookOffset.z + height + offset;
+                actionCamera.transform.LookAt(shootAction.TargetUnit.transform.position + height);
+                break;
             }
         }
 
@@ -70,21 +70,15 @@ namespace Level
         {
             switch (action)
             {
-                case ShootAction:
-                    HideActionCamera();
-                    break;
+            case ShootAction:
+                HideActionCamera();
+                break;
             }
         }
 
-        private void ShowActionCamera()
-        {
-            actionCamera.SetActive(true);
-        }
+        private void ShowActionCamera() { actionCamera.SetActive(true); }
 
-        private void HideActionCamera()
-        {
-            actionCamera.SetActive(false);
-        }
+        private void HideActionCamera() { actionCamera.SetActive(false); }
 
         private void HandleMovement()
         {
@@ -109,8 +103,9 @@ namespace Level
                 inputMoveDir.x += 1f;
             }
 
-            var moveVector = sceneCamera.transform.forward * inputMoveDir.z + transform.right * inputMoveDir.x;
-            sceneCamera.transform.position += moveSpeed * Time.deltaTime * moveVector;
+            var transform1 = sceneCamera.transform;
+            var moveVector = transform1.forward * inputMoveDir.z + transform.right * inputMoveDir.x;
+            transform1.position += moveSpeed * Time.deltaTime * moveVector;
         }
 
         private void HandleRotation()
@@ -131,19 +126,18 @@ namespace Level
 
         private void HandleZoom()
         {
-            if (Input.mouseScrollDelta.y > 0)
+            switch (Input.mouseScrollDelta.y)
             {
+            case > 0:
                 _targetFollowOffset.y -= zoomAmount;
-            }
-
-            if (Input.mouseScrollDelta.y < 0)
-            {
+                break;
+            case < 0:
                 _targetFollowOffset.y += zoomAmount;
+                break;
             }
 
             _targetFollowOffset.y = Mathf.Clamp(_targetFollowOffset.y, MinFollowOffsetY, MaxFollowOffsetY);
-
-            _sceneTransposer.m_FollowOffset = Vector3.Lerp(_sceneTransposer.m_FollowOffset, _targetFollowOffset, zoomSpeed * Time.deltaTime);
+            _sceneTransposer.m_FollowOffset = Vector3.Lerp(_sceneTransposer.m_FollowOffset, _targetFollowOffset, t: zoomSpeed * Time.deltaTime);
         }
     }
 }

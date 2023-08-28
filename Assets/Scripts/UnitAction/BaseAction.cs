@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Grid;
-using UnityEngine;
 using UnitSystem;
+using UnityEngine;
 
 namespace UnitAction
 {
     public abstract class BaseAction : MonoBehaviour
     {
-        public static event Action<BaseAction> OnAnyActionStarted;
-        public static event Action<BaseAction> OnAnyActionCompleted;
+        private Action _actionComplete;
+
+        protected bool IsActive;
 
         public Unit OwnerUnit { get; private set; }
 
@@ -17,37 +18,33 @@ namespace UnitAction
 
         public string ActionName => GetActionName();
 
-        public bool IsValidActionPosition(GridPosition position) => GetValidActionGridPositionList().Contains(position);
+        protected virtual void Awake() { OwnerUnit = GetComponent<Unit>(); }
 
-        public abstract List<GridPosition> GetValidActionGridPositionList();
+        public static event Action<BaseAction> OnAnyActionStarted;
+        public static event Action<BaseAction> OnAnyActionCompleted;
 
-        public abstract void TakeAction(GridPosition gridPosition, Action onActionComplete);
+        public bool IsValidActionPosition(GridPosition p) => GetValidActionPositions().Contains(p);
+
+        public abstract List<GridPosition> GetValidActionPositions();
+
+        public abstract void TakeAction(GridPosition p, Action onActionComplete);
 
         public virtual int GetActionPointsCost() => 1;
-
-        protected bool IsActive;
-
-        protected Action OnActionComplete;
-
-        protected virtual void Awake()
-        {
-            OwnerUnit = GetComponent<Unit>();
-        }
 
         protected abstract string GetActionName();
 
         protected void ActionStart(Action onActionComplete)
         {
             IsActive = true;
-            OnActionComplete = onActionComplete;
+            _actionComplete = onActionComplete;
             OnAnyActionStarted?.Invoke(this);
         }
 
         protected void ActionComplete()
         {
             IsActive = false;
-            OnActionComplete?.Invoke();
-            OnActionComplete = null;
+            _actionComplete?.Invoke();
+            _actionComplete = null;
             OnAnyActionCompleted?.Invoke(this);
         }
     }

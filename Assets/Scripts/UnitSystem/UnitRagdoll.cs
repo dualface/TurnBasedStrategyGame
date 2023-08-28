@@ -13,21 +13,25 @@ namespace UnitSystem
             ApplyExplosion(rootBone, 300f, transform.position, 10f);
         }
 
-        private void CopyChildTransforms(Transform originBone, Transform bone)
+        private static void CopyChildTransforms(Transform originBone, Transform bone)
         {
             foreach (Transform child in originBone)
             {
                 var targetChild = bone.Find(child.name);
-                if (targetChild)
+                if (!targetChild)
                 {
-                    targetChild.SetPositionAndRotation(child.position, child.rotation);
-
-                    CopyChildTransforms(child, targetChild);
+                    continue;
                 }
+
+                targetChild.SetPositionAndRotation(child.position, child.rotation);
+                CopyChildTransforms(child, targetChild);
             }
         }
 
-        private void ApplyExplosion(Transform bone, float explosionForce, Vector3 explosionPosition, float explosionRadius)
+        private static void ApplyExplosion(Transform bone,
+                                           float explosionForce,
+                                           Vector3 explosionPosition,
+                                           float explosionRadius)
         {
             foreach (Transform child in bone)
             {

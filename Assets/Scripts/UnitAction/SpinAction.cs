@@ -9,19 +9,6 @@ namespace UnitAction
     {
         private float _totalSpinAmount;
 
-        public override List<GridPosition> GetValidActionGridPositionList()
-        {
-            return new List<GridPosition> { OwnerUnit.GridPosition };
-        }
-
-        public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
-        {
-            _totalSpinAmount = 0;
-            ActionStart(onActionComplete);
-        }
-
-        protected override string GetActionName() => "Spin";
-
         private void Update()
         {
             if (!IsActive)
@@ -38,9 +25,16 @@ namespace UnitAction
             }
         }
 
-        private void SpinEnded()
+        public override List<GridPosition> GetValidActionPositions() => new() { OwnerUnit.GridPosition };
+
+        public override void TakeAction(GridPosition p, Action onActionComplete)
         {
-            ActionComplete();
+            _totalSpinAmount = 0;
+            ActionStart(onActionComplete);
         }
+
+        protected override string GetActionName() => "Spin";
+
+        private void SpinEnded() { ActionComplete(); }
     }
 }

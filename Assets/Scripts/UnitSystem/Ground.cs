@@ -17,7 +17,7 @@ namespace UnitSystem
         private void Update()
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, groundLayer))
+            if (Physics.Raycast(ray, out var hit, float.MaxValue, groundLayer))
             {
                 IsMouseOnGround = true;
                 MousePosition = hit.point;

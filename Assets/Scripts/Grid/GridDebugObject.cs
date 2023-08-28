@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 
@@ -15,9 +14,6 @@ namespace Grid
             gridObject.OnCellChanged += OnGridObjectChanged;
         }
 
-        private void OnGridObjectChanged(object sender, EventArgs e)
-        {
-            label.text = sender.ToString();
-        }
+        private void OnGridObjectChanged(GridObject gridObject) { label.text = gridObject.ToString(); }
     }
 }

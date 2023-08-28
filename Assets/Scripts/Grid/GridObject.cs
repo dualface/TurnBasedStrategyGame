@@ -6,51 +6,44 @@ namespace Grid
 {
     public class GridObject
     {
-        public event EventHandler OnCellChanged;
+        public event Action<GridObject> OnCellChanged;
 
-        public GridPosition Position { get; private set; }
+        public List<Unit> UnitList { get; } = new();
 
-        private readonly List<Unit> _unitList = new();
+        public GridObject(GridPosition position) { Position = position; }
 
-        public GridObject(GridPosition position)
-        {
-            Position = position;
-        }
+        public GridPosition Position { get; }
 
         public void AddUnit(Unit unit)
         {
-            _unitList.Add(unit);
+            UnitList.Add(unit);
             OnChanged();
         }
 
-        public List<Unit> GetUnitList() => _unitList;
-
-        public bool HasAnyUnit() => _unitList.Count > 0;
+        public bool HasAnyUnit() => UnitList.Count > 0;
 
         public void RemoveUnit(Unit unit)
         {
-            _unitList.Remove(unit);
+            UnitList.Remove(unit);
             OnChanged();
         }
 
         public override string ToString()
         {
             var text = $"({Position.Row}, {Position.Column})";
-            if (_unitList.Count <= 0)
+            if (UnitList.Count <= 0)
             {
                 return text;
             }
 
-            foreach (var unit in _unitList)
+            foreach (var unit in UnitList)
             {
                 text += $"\n{unit}";
             }
+
             return text;
         }
 
-        private void OnChanged()
-        {
-            OnCellChanged?.Invoke(this, EventArgs.Empty);
-        }
+        private void OnChanged() { OnCellChanged?.Invoke(this); }
     }
 }

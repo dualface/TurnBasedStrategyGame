@@ -13,7 +13,7 @@ namespace Grid
             Column = column;
         }
 
-        public override bool Equals(object obj) => obj is GridPosition pos && Row == pos.Row && Column == pos.Column;
+        public override bool Equals(object other) => other is GridPosition p && Row == p.Row && Column == p.Column;
 
         public override int GetHashCode() => HashCode.Combine(Row, Column);
 
@@ -23,9 +23,9 @@ namespace Grid
 
         public static bool operator !=(GridPosition a, GridPosition b) => a.Row != b.Row || a.Column != b.Column;
 
-        public static GridPosition operator +(GridPosition a, GridPosition b) => new(a.Row + b.Row, a.Column + b.Column);
+        public static GridPosition operator +(GridPosition a, GridPosition b) => new(row: a.Row + b.Row, column: a.Column + b.Column);
 
-        public static GridPosition operator -(GridPosition a, GridPosition b) => new(a.Row - b.Row, a.Column - b.Column);
+        public static GridPosition operator -(GridPosition a, GridPosition b) => new(row: a.Row - b.Row, column: a.Column - b.Column);
 
         public override string ToString() => $"(row:{Row}, column:{Column})";
     }

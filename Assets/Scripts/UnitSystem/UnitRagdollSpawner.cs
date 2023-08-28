@@ -20,9 +20,8 @@ namespace UnitSystem
 
         private void OnDead()
         {
-            var obj = Instantiate(ragdollPrefab, transform.position, transform.rotation);
-            var ragdoll = obj.GetComponent<UnitRagdoll>();
-            ragdoll.Setup(originRagdollRootBone);
+            var o = Instantiate(ragdollPrefab, transform.position, transform.rotation);
+            o.GetComponent<UnitRagdoll>().Setup(originRagdollRootBone);
         }
     }
 }
