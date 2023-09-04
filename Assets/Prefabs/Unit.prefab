@@ -190,8 +190,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectionVisual: {fileID: 369614588566932799}
-  selectedColor: {r: 0.46150142, g: 0.94509804, b: 0.29019606, a: 1}
   isEnemy: 0
+  defaultAction: {fileID: 3110522144650933032}
 --- !u!114 &5947470530393089771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,7 +250,7 @@ MonoBehaviour:
   maxShootDistance: 2
   aimingDuration: 0.5
   shootDuration: 0.2
-  cooloffDuration: 0.5
+  coolOffDuration: 0.5
   rotateSpeed: 20
 --- !u!114 &7898310587991775000
 MonoBehaviour:

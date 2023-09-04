@@ -79,9 +79,25 @@ PrefabInstance:
       propertyPath: isEnemy
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4699753718307908322, guid: 87b3f24ceddce0542aa4054a5f8210ff, type: 3}
+    - target: {fileID: 4671423713846975061, guid: 87b3f24ceddce0542aa4054a5f8210ff,
+        type: 3}
+      propertyPath: defaultAction
+      value: 
+      objectReference: {fileID: 4363212060464537936}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 87b3f24ceddce0542aa4054a5f8210ff, type: 3}
+--- !u!114 &4363212060464537936 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4699753718307908322, guid: 87b3f24ceddce0542aa4054a5f8210ff,
+    type: 3}
+  m_PrefabInstance: {fileID: 9058391808804916146}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ed1021257f8c92488a04b837e9e15b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

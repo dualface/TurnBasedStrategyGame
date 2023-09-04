@@ -2,6 +2,7 @@ using System;
 using Grid;
 using UnitAction;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UnitSystem
 {
@@ -15,13 +16,15 @@ namespace UnitSystem
         [SerializeField]
         private bool isEnemy;
 
+        [SerializeField]
+        public BaseAction defaultAction;
+
         public int ActionPoints { get; private set; } = DefaultActionPoints;
 
         public GridPosition GridPosition { get; private set; }
 
         public Vector3 WorldPosition => transform.position;
 
-        public MoveAction DefaultAction { get; private set; }
 
         public BaseAction[] Actions { get; private set; }
 
@@ -31,7 +34,6 @@ namespace UnitSystem
 
         private void Awake()
         {
-            DefaultAction = GetComponent<MoveAction>();
             Actions = GetComponents<BaseAction>();
             Health = GetComponent<UnitHealth>();
         }

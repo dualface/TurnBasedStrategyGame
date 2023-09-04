@@ -23,6 +23,10 @@ namespace UnitSystem
 
         public static UnitActionSystem Instance { get; private set; }
 
+        public List<Unit> EnemyUnits { get; private set; } = new();
+
+        public List<Unit> FriendlyUnits { get; private set; } = new();
+
         public Unit SelectedUnit { get; private set; }
 
         private void Awake()
@@ -145,7 +149,7 @@ namespace UnitSystem
 
             SelectedUnit = unit;
             SelectedUnit.SetSelected(true);
-            SetSelectedAction(SelectedUnit.DefaultAction);
+            SetSelectedAction(SelectedUnit.defaultAction);
 
             OnSelectedUnitChanged?.Invoke(SelectedUnit);
             Debug.Log($"Select unit {SelectedUnit.gameObject.name}");
@@ -237,8 +241,30 @@ namespace UnitSystem
             Debug.Log($"Select action {action.ActionName}");
         }
 
-        public void AddUnit(Unit unit) { _units.Add(unit); }
+        public void AddUnit(Unit unit)
+        {
+            _units.Add(unit);
+            if (unit.IsEnemy)
+            {
+                EnemyUnits.Add(unit);
+            }
+            else
+            {
+                FriendlyUnits.Add(unit);
+            }
+        }
 
-        internal void RemoveUnit(Unit unit) { _units.Remove(unit); }
+        public void RemoveUnit(Unit unit)
+        {
+            _units.Remove(unit);
+            if (unit.IsEnemy)
+            {
+                EnemyUnits.Remove(unit);
+            }
+            else
+            {
+                FriendlyUnits.Remove(unit);
+            }
+        }
     }
 }
